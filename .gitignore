@@ -1,0 +1,11 @@
+env/
+.env
+cenv/
+*.pyc
+__pycache__/
+logs/
+*.pdf
+report_assets
+*.py[cod]
+creds.env
+*.sqlite3
