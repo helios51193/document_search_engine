@@ -1,0 +1,52 @@
+{% extends "auth_manager/auth_base.jinja" %}
+
+{% block title %}Login{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-center align-items-center" style="height: 100vh; background-color: #f8f9fa;">
+    <div class="card shadow p-4" style="min-width: 500px;">
+        <h3 class="text-center mb-4">Login</h3>
+        <form method="POST" novalidate>
+            {% csrf_token %}
+            <div class="mb-3">
+                <label class="form-label">{{ login_form.email.label }}</label>
+                {{ login_form.email }}
+            </div>
+
+            <div class="mb-3">
+                <label class="form-label">{{ login_form.password.label }}</label>
+                <div class="input-group">
+                    {{ login_form.password }}
+                    <button type="button" class="btn btn-outline-secondary" onclick="togglePassword()"> Show </button>
+                </div>
+                
+            </div>
+            <button class="btn btn-primary w-100" type="submit">
+                Login
+            </button>
+
+        </form>
+        {% if has_errors == True %}
+            <ul class="list-group">
+                {%for err in errors %}
+                <li class="list-group-item list-group-item-danger">{{err}}</li>
+                {% endfor %}
+            </ul>
+        {% endif %}
+    </div>
+<script>
+function togglePassword() {
+    const input = document.getElementById("id_password");  // default id from Django
+    const btn = event.target;
+
+    if (input.type === "password") {
+        input.type = "text";
+        btn.textContent = "Hide";
+    } else {
+        input.type = "password";
+        btn.textContent = "Show";
+    }
+}
+</script>
+</div>
+{% endblock %}
