@@ -19,5 +19,6 @@ from django.urls import include, path
 
 urlpatterns = [
     path('', include('auth_manager.urls')),
+    path('documents/',include('document_manager.urls', namespace="documents")),
     path('admin/', admin.site.urls),
 ]

@@ -1,0 +1,33 @@
+{% extends "document_manager/base.jinja" %}
+
+{% block title %}Documents{% endblock %}
+
+{% block content %}
+{% include 'document_manager/document_navbar.jinja' %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-7">
+            <h4>Your Documents</h4>
+            <div
+                id="doc-list-panel"
+                hx-get="{{ url('documents:document_list_panel') }}"
+                hx-trigger="load, document-uploaded from:body"
+                hx-target="this"
+                hx-swap="innerHTML"
+            >
+            </div>
+        </div>
+        <div class="col-md-5">
+            <h4>Upload a new document</h4>
+            <div
+            id="doc-upload-panel"
+            hx-get="{{ url('documents:document_upload_panel') }}"
+            hx-trigger="load"
+            hx-target="this"
+            hx-swap="innerHTML"
+            >
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

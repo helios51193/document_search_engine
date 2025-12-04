@@ -1,0 +1,32 @@
+{% if documents %}
+    <table class="table table-sm align-middle">
+      <thead>
+          <tr>
+              <th>Title</th>
+              <th>Status</th>
+              <th>Uploaded</th>
+          </tr>
+      </thead>
+      <tbody>
+          {% for doc in documents %}
+          <tr>
+              <td>{{ doc.title }}</td>
+              <td>
+                  {% if doc.status == "ready" %}
+                      <span class="badge bg-success">Ready</span>
+                  {% elif doc.status == "indexing" %}
+                      <span class="badge bg-warning text-dark">Indexing</span>
+                  {% elif doc.status == "pending" %}
+                      <span class="badge bg-secondary">Pending</span>
+                  {% else %}
+                      <span class="badge bg-danger">Error</span>
+                  {% endif %}
+              </td>
+              <td>{{ doc.created_at.strftime('%Y-%m-%d') }}</td>
+          </tr>
+          {% endfor %}
+      </tbody>
+  </table>
+{% else %}
+  <p class="text-muted">No documents uploaded yet.</p>
+{% endif %}

@@ -24,6 +24,7 @@ def user_login(request):
                 if user is not None:
                     print("Authenticated")
                     login(request,user)
+                    return redirect('documents:document_dashboard')
                 else:
                     context['has_errors'] = True
                     context['errors'] = ['Invalid email and/or password']

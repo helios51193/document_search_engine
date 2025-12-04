@@ -1,0 +1,28 @@
+{% if is_success %}
+    <div class="alert alert-success py-1 mb-2">
+        success_message
+  </div>
+{% endif %}
+{% if has_errors %}
+    <ul class="list-group">
+        {%for err in errors %}
+        <li class="list-group-item list-group-item-danger">{{err}}</li>
+        {% endfor %}
+    </ul>
+{% endif %}
+
+<form method="post" enctype="multipart/form-data" 
+hx-post="{{ url('documents:document_upload_panel') }}" hx-target='#doc-upload-panel' hx-swap='innerHTML'>
+{% csrf_token %}
+    <div class="mb-3">
+        <label class="form-label">Title</label>
+        {{ form.title }}
+    </div>
+    <div class="mb-3">
+        <label class="form-label">File</label>
+        {{ form.file }}
+    </div>
+    <button type="submit" class="btn btn-success">
+        Upload
+    </button>
+</form>

@@ -38,7 +38,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django_jinja',
-    'auth_manager'
+    'auth_manager',
+    'document_manager'
 ]
 
 MIDDLEWARE = [
