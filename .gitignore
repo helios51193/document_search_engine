@@ -9,3 +9,4 @@ report_assets
 *.py[cod]
 creds.env
 *.sqlite3
+documents

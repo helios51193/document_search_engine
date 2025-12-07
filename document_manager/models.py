@@ -32,6 +32,6 @@ class Document(TimeStampModel):
         choices=STATUS_CHOICES,
         default="pending"
     )
-
+    metadata = models.JSONField(blank=True, null=True, default=dict)
     def __str__(self):
         return self.title
