@@ -1,0 +1,2 @@
+# Start a celery worker in wndows
+#celery -A document_search_engine worker -l info -P solo

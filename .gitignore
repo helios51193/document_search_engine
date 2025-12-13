@@ -10,3 +10,4 @@ report_assets
 creds.env
 *.sqlite3
 documents
+qdrant_storage

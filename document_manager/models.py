@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth import get_user_model
 
+
 class TimeStampModel(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -35,3 +36,42 @@ class Document(TimeStampModel):
     metadata = models.JSONField(blank=True, null=True, default=dict)
     def __str__(self):
         return self.title
+
+class SiteSetting(models.Model):
+    PROVIDER_CHOICES = [
+        ("openai", "OpenAI"),
+        ("ollama", "Ollama"),
+    ]
+
+    key = models.CharField(max_length=100, unique=True)  # e.g. "embedding_provider"
+    value = models.CharField(max_length=50, choices=PROVIDER_CHOICES, default="openai")
+    updated_at = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return f"{self.key}={self.value}"
+
+    @classmethod
+    def get_provider(cls):
+        try:
+            s = cls.objects.get(key="embedding_provider")
+            return s.value
+        except cls.DoesNotExist:
+            return "openai"
+
+class Chunk(models.Model):
+    document = models.ForeignKey(Document, on_delete=models.CASCADE, related_name="chunks")
+    index = models.IntegerField()  # the nth chunk in the document
+    text = models.TextField()
+    start_offset = models.IntegerField(null=True, blank=True)
+    end_offset = models.IntegerField(null=True, blank=True)
+    vector_id = models.CharField(max_length=64, blank=True)  # ID in Qdrant
+
+    class Meta:
+        unique_together = ("document", "index")
+
+class SearchLog(models.Model):
+    user = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
+    query = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    num_results = models.IntegerField()
+    latency_ms = models.IntegerField()
