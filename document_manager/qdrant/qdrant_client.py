@@ -15,7 +15,7 @@ COLLECTION_NAME = "doc_chunks"
 def qdrant_client() -> QdrantClient:
     if QDRANT_API_KEY:
         return QdrantClient(url=f"http://{QDRANT_HOST}:{QDRANT_PORT}", api_key=QDRANT_API_KEY)
-    return QdrantClient(host=QDRANT_HOST, port=QDRANT_PORT, check_compatibility=False)
+    return QdrantClient(host=QDRANT_HOST, port=QDRANT_PORT)
 
 
 def ensure_collection():
@@ -48,13 +48,15 @@ def upsert_vector(chunk_id: int, embedding: list, payload: dict):
         
 
 def search_vectors(query_embedding: list, top_k=10, filter_payload=None):
-    client = qdrant_client()
+    
+    client:QdrantClient = qdrant_client()
 
     search_result = client.search(
         collection_name=COLLECTION_NAME,
         query_vector=query_embedding,
         limit=top_k,
         query_filter=filter_payload,  # Qdrant filter object, optional
+        with_payload=True,
     )
 
     # Map to a simple list

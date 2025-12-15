@@ -1,0 +1,36 @@
+{% extends "document_manager/base.jinja" %}
+
+{% block title %}Search Documents{% endblock %}
+
+{% block content %}
+{% include 'document_manager/document_navbar.jinja' %}
+
+<div class="container">
+    <h3 class="mt-4">Semantic Search</h3>
+    <div class="row mt-2 mb-4">
+        <div 
+            class="col-12"
+            hx-get="{{ url('document_manager:document_search_input_panel')}}"
+            hx-trigger="load"
+            hx-target="this"
+            hx-swap="innerHTML"
+        ></div>
+    </div>
+
+    <div class="row">
+        <div
+            class="col-12"
+            id="search-results-panel"
+            hx-get="{{ url('document_manager:document_search_result_panel') }}"
+            hx-trigger="load"
+            hx-target="this"
+            hx-swap="innerHTML"
+        >
+            <!-- results load here -->
+        </div>
+    </div>
+
+</div>
+
+
+{% endblock %}

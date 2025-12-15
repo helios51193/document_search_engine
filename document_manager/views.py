@@ -1,7 +1,10 @@
 import traceback
 from django.shortcuts import render,redirect
-from django.contrib.auth.decorators import login_required 
+from django.contrib.auth.decorators import login_required
+
+from document_manager.search import semantic_search 
 from .tasks import process_document
+from django.shortcuts import render, get_object_or_404
 from .models import Document
 from .forms import DocumentUploadForm
 
@@ -65,3 +68,52 @@ def document_upload_panel(request):
         context['errors'] = ["Some Internal Error occured"]
         return render(request, "document_manager/_document_upload.jinja", context=context)
 
+
+@login_required(login_url='/login')
+def document_search_input_panel(request):
+
+    context = {}
+
+    return render(request, "document_manager/_search_input_panel.jinja", context=context)
+
+
+@login_required(login_url='/login')
+def document_search_result_panel(request):
+
+    
+    query = request.POST.get("q", "").strip()
+    results = []
+    if query:
+        results = semantic_search(
+            query=query,
+            user_id=request.user.id,
+            top_k=10,
+        )
+    
+    context = {
+        "query":query,
+        "results":results
+    }
+
+    return render(request, "document_manager/_search_result_panel.jinja", context=context)
+
+@login_required(login_url='/login')
+def document_search_page(request):
+
+    context = {}
+
+    return render(request, "document_manager/document_search_base.jinja", context=context)
+
+@login_required(login_url='/login')
+def document_detail_page(request, document_id):
+
+    context = {}
+    document = None
+    try:
+        document = Document.objects.get(id=int(document_id), owner=request.user)
+    except Document.DoesNotExist:
+        pass
+
+    context['document'] = document
+
+    return render(request, "document_manager/document_detail.jinja", context=context)

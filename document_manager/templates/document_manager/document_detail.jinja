@@ -1,0 +1,39 @@
+{% extends "document_manager/base.jinja" %}
+
+{% block title %}Search Documents{% endblock %}
+
+{% block content %}
+{% include 'document_manager/document_navbar.jinja' %}
+{% if not document %}
+    <span>INVALID DOCUMENT OR DOCUMENT DOES NOT EXIST !!</span>
+{% else %}
+    <div class="container">
+        <h3 class="mt-2">{{ document.title }}</h3>
+
+        <p class="text-muted">
+            Status: <strong>{{ document.status }}</strong><br>
+            Uploaded: {{ document.created_at }}
+        </p>
+
+        <hr>
+
+        <h4>Extracted Text</h4>
+
+        {% if document.content_text %}
+            <div class="border rounded p-3"
+                style="white-space: pre-wrap; max-height: 400px; overflow-y: auto;">
+                {{ document.content_text }}
+            </div>
+        {% else %}
+            <p class="text-muted">
+                Text has not been extracted yet.
+            </p>
+        {% endif %}
+
+        <hr>
+
+        <a href="{{ url('document_manager:document_search') }}" class="btn btn-secondary">Back to Search </a>
+    </div>
+    
+{% endif %}
+{% endblock %}

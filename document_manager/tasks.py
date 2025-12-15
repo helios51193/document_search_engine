@@ -34,6 +34,7 @@ def process_document(document_id):
         for chunk in chunk_objs:
             embedding = get_embedding(chunk.text)  # dispatches to OpenAI or Ollama
             payload = {
+                "owner_id":doc.owner_id,
                 "document_id": doc.id,
                 "chunk_id": chunk.id,
                 "title": doc.title,

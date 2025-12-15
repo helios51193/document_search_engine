@@ -1,0 +1,39 @@
+{% if not query %}
+    <p class="text-muted">
+        Enter a query to search your documents.
+    </p>
+
+{% elif not results %}
+    <p class="text-muted">
+        No results found for "{{ query }}".
+    </p>
+
+{% else %}
+    <p class="text-muted mb-2">
+        {{ results|length }} result{{ results|length != 1 and "s" or "" }} found
+    </p>
+
+    <ul class="list-group">
+        {% for r in results %}
+            <li class="list-group-item">
+                <div class="d-flex justify-content-between">
+                    <strong>{{ r.document_title }}</strong>
+                    <small class="text-muted">
+                        score: {{ r.score }}
+                    </small>
+                </div>
+
+                <p class="mt-2 mb-1 text-muted">
+                    {{ r.snippet }}{% if r.snippet|length >= 400 %}…{% endif %}
+                </p>
+
+                <a
+                    href="{{ url('document_manager:document_detail', args=[r.document_id])}}"
+                    class="small"
+                >
+                    View document
+                </a>
+            </li>
+        {% endfor %}
+    </ul>
+{% endif %}

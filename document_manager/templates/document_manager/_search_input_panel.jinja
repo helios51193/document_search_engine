@@ -1,0 +1,17 @@
+<form
+    hx-post="{{ url('document_manager:document_search_result_panel') }}"
+    hx-target="#search-results-panel"
+    hx-swap="innerHTML"
+    class="d-flex gap-2"
+>   {% csrf_token %}
+    <input
+        type="text"
+        name="q"
+        class="form-control"
+        placeholder="Search across your documents…"
+        required
+    >
+    <button class="btn btn-primary">
+        Search
+    </button>
+</form>
