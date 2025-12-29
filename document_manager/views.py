@@ -1,12 +1,15 @@
 import traceback
+from django.http import HttpResponse
 from django.shortcuts import render,redirect
 from django.contrib.auth.decorators import login_required
 
-from document_manager.search import semantic_search 
+from document_manager.search import semantic_search
+from document_manager.services import reset_document_for_reindex 
 from .tasks import process_document
 from django.shortcuts import render, get_object_or_404
 from .models import Document
 from .forms import DocumentUploadForm
+from .qdrant.qdrant_client import delete_document_vectors
 
 @login_required(login_url='/login')
 def document_dashboard(request):
@@ -117,3 +120,44 @@ def document_detail_page(request, document_id):
     context['document'] = document
 
     return render(request, "document_manager/document_detail.jinja", context=context)
+
+@login_required(login_url='/login')
+def delete_document(request, document_id:int):
+
+    if request.method != "POST":
+        return HttpResponse(status=405)
+    
+    try:
+        document = Document.objects.get(id=document_id, owner=request.user)
+    except Exception as e:
+        return HttpResponse(status=404)
+    
+    # Delete vectors from qdrant
+    delete_document_vectors(document.id)
+
+    #delete document
+    document.delete()
+
+    # Tell HTMX that something has changed
+    response = HttpResponse("")
+    response["HX-Trigger"] = "document-deleted"
+    return response
+
+@login_required(login_url='/login')
+def reindex_document(request, document_id):
+
+    if request.method != "POST":
+        return HttpResponse(status=405)
+    
+    try:
+        document = Document.objects.get(id=document_id, owner=request.user)
+    except Exception as e:
+        return HttpResponse(status=404)
+    
+    reset_document_for_reindex(document)
+
+    process_document.delay(document.id)
+
+    response = HttpResponse("")
+    response["HX-Trigger"] = "document-reindexed"
+    return response

@@ -26,5 +26,14 @@
 
     {% block extra_js %}{% endblock %}
 
+  <script>
+    document.body.addEventListener('htmx:configRequest', function (event) {
+      const token = document.querySelector('meta[name="csrf-token"]')?.content;
+      if (token) {
+        event.detail.headers['X-CSRFToken'] = token;
+      }
+    });
+  </script>
+  <meta name="csrf-token" content="{{ csrf_token }}">
   </body>
 </html>

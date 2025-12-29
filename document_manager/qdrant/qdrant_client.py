@@ -76,3 +76,24 @@ def delete_document_vectors(document_id: int):
         collection_name=COLLECTION_NAME,
         query_filter=rest.Filter(must=[rest.FieldCondition(key="document_id", match=rest.MatchValue(value=document_id))])
     )
+
+def delete_document_vectors(document_id:int):
+
+    client = qdrant_client()
+
+    selector = rest.FilterSelector(
+        filter=rest.Filter(
+            must=[
+                rest.FieldCondition(
+                    key="document_id",
+                    match=rest.MatchValue(value=document_id),
+                )
+            ]
+        )
+    )
+
+    client.delete(
+        collection_name=COLLECTION_NAME,
+        points_selector=selector,
+    )
+

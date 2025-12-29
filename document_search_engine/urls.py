@@ -23,7 +23,7 @@ def root_redirect(request):
 
 urlpatterns = [
     path("", root_redirect),
-    path('/admin', include('auth_manager.urls')),
+    path('admin/', include('auth_manager.urls')),
     path('documents/',include('document_manager.urls', namespace="documents")),
-    path('admin/', admin.site.urls),
+    path('cadmin/', admin.site.urls),
 ]

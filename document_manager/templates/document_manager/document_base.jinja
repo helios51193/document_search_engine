@@ -4,14 +4,14 @@
 
 {% block content %}
 {% include 'document_manager/document_navbar.jinja' %}
-<div class="container mt-4">
+<div class="container-lg mt-4">
     <div class="row">
         <div class="col-md-7">
             <h4>Your Documents</h4>
             <div
                 id="doc-list-panel"
                 hx-get="{{ url('documents:document_list_panel') }}"
-                hx-trigger="load, document-uploaded from:body"
+                hx-trigger="load, document-uploaded from:body, document-deleted from:body, document-reindexed from:body"
                 hx-target="this"
                 hx-swap="innerHTML"
             >

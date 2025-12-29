@@ -13,5 +13,7 @@ urlpatterns = [
     # main pages
     path("dashboard/", views.document_dashboard, name="document_dashboard"),
     path("search/", views.document_search_page, name="document_search"),
-    path("detail/<int:document_id>/", views.document_detail_page, name="document_detail")
+    path("detail/<int:document_id>/", views.document_detail_page, name="document_detail"),
+    path("delete/<int:document_id>/", views.delete_document, name="delete_document"),
+    path("reindex/<int:document_id>/", views.reindex_document, name="reindex_document"),
 ]
