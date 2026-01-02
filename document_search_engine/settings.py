@@ -160,6 +160,8 @@ CELERY_RESULT_BACKEND = "redis://localhost:6379/0"
 
 # LLM
 OPENAI_EMBEDDING_MODEL = "text-embedding-3-small"
+OLLAMA_EMBEDDING_MODEL = "nomic-embed-text"
+EMBEDDING_PROVIDER = "openai"
 VECTOR_SIZE = 1536
 load_dotenv()
 

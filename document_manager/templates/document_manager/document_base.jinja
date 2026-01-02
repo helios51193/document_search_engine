@@ -11,7 +11,12 @@
             <div
                 id="doc-list-panel"
                 hx-get="{{ url('documents:document_list_panel') }}"
-                hx-trigger="load, document-uploaded from:body, document-deleted from:body, document-reindexed from:body"
+                hx-trigger="load, 
+                    document-uploaded from:body, 
+                    document-deleted from:body, 
+                    document-reindexed from:body,
+                    document-indexed from:body
+                    "
                 hx-target="this"
                 hx-swap="innerHTML"
             >

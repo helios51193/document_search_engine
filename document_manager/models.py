@@ -25,6 +25,8 @@ class Document(TimeStampModel):
         on_delete=models.CASCADE,
         related_name="documents"
     )
+    progress = models.PositiveSmallIntegerField(default=0)
+    last_indexed_at = models.DateTimeField(null=True, blank=True)
     title = models.CharField(max_length=255)
     file = models.FileField(upload_to="documents/")
     content_text = models.TextField(blank=True)
@@ -32,6 +34,21 @@ class Document(TimeStampModel):
         max_length=20,
         choices=STATUS_CHOICES,
         default="pending"
+    )
+    embedding_model = models.CharField(
+        max_length=100,
+        blank=True,
+        help_text="Embedding model used during last indexing",
+    )
+
+    chunk_count = models.PositiveIntegerField(
+        default=0,
+        help_text="Number of chunks created during last indexing",
+    )
+
+    token_count = models.PositiveIntegerField(
+        default=0,
+        help_text="Approximate token count used for embeddings",
     )
     metadata = models.JSONField(blank=True, null=True, default=dict)
     def __str__(self):

@@ -1,7 +1,7 @@
 from qdrant_client.http import models as rest
 from .embeddings import get_embedding
-from .qdrant.qdrant_client import search_vectors
-from .models import Chunk
+from document_manager.qdrant.qdrant_client import search_vectors
+from document_manager.models import Chunk
 
 def semantic_search(query:str, user_id:int, top_k: int = 10):
 

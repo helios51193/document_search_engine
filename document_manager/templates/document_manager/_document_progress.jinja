@@ -1,0 +1,18 @@
+{% if document.status == "indexing" %}
+    <div class="progress">
+        <div
+            class="progress-bar progress-bar-striped progress-bar-animated"
+            role="progressbar"
+            style="width: {{ document.progress }}%;"
+        >
+            {{ document.progress }}%
+        </div>
+    </div>
+
+{% elif document.status == "ready" %}
+    <span class="text-success">✔ Done</span>
+
+{% elif document.status == "error" %}
+    <span class="text-danger">✖ Error</span>
+{% endif %}
+

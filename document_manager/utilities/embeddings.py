@@ -1,7 +1,8 @@
 import os
 import logging
 from typing import List
-from .models import SiteSetting
+from document_manager.models import SiteSetting
+from django.conf import settings
 
 logger = logging.getLogger(__name__)
 
@@ -38,7 +39,7 @@ def _normalize_text_input(text: str) -> list[str]:
 
     return normalized
 
-def get_openai_embedding(text: str, model: str = "text-embedding-3-small") -> List[float]:
+def get_openai_embedding(text: str) -> List[float]:
     """
     Returns a single embedding vector for text using OpenAI.
     """
@@ -49,7 +50,7 @@ def get_openai_embedding(text: str, model: str = "text-embedding-3-small") -> Li
 
 
     resp = client.embeddings.create(
-        model=model,
+        model=settings.OPENAI_EMBEDDING_MODEL,
         input=input
     )
 

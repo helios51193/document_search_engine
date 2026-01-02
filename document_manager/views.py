@@ -3,8 +3,8 @@ from django.http import HttpResponse
 from django.shortcuts import render,redirect
 from django.contrib.auth.decorators import login_required
 
-from document_manager.search import semantic_search
-from document_manager.services import reset_document_for_reindex 
+from document_manager.utilities.search import semantic_search
+from document_manager.utilities.services import reset_document_for_reindex 
 from .tasks import process_document
 from django.shortcuts import render, get_object_or_404
 from .models import Document
@@ -160,4 +160,24 @@ def reindex_document(request, document_id):
 
     response = HttpResponse("")
     response["HX-Trigger"] = "document-reindexed"
+    return response
+
+@login_required(login_url='/login')
+def document_progress_panel(request, document_id):
+
+    document = get_object_or_404(
+        Document,
+        id=document_id,
+        owner=request.user,
+    )
+    response = render(
+        request,
+        "document_manager/_document_progress.jinja",
+        {"document": document},
+    )
+
+    # trigger to update the doc list and re-evaluate the button statuses
+    if document.status == "ready" and request.headers.get("HX-Request"):
+        response["HX-Trigger"] = "document-indexed"
+    
     return response
