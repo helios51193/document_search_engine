@@ -26,6 +26,7 @@
 
     {% block extra_js %}{% endblock %}
 
+  {# For adding csrf middleware token in forms #}
   <script>
     document.body.addEventListener('htmx:configRequest', function (event) {
       const token = document.querySelector('meta[name="csrf-token"]')?.content;
@@ -35,5 +36,33 @@
     });
   </script>
   <meta name="csrf-token" content="{{ csrf_token }}">
+  
+  {# For Handing Duplicate submit calls #}
+  <script>
+    // Disable submit buttons on HTMX request start
+    document.body.addEventListener("htmx:beforeRequest", function (event) {
+      const form = event.target.closest("form");
+      if (!form) return;
+
+      const submitBtn = form.querySelector("[data-submit-button]");
+      if (!submitBtn) return;
+
+      submitBtn.disabled = true;
+      submitBtn.dataset.originalText = submitBtn.innerHTML;
+      submitBtn.innerHTML = `<span class="spinner-border spinner-border-sm me-2"></span> Uploading…`;
+    });
+
+    // Re-enable submit button on error
+    document.body.addEventListener("htmx:responseError", function (event) {
+      const form = event.target.closest("form");
+      if (!form) return;
+
+      const submitBtn = form.querySelector("[data-submit-button]");
+      if (!submitBtn) return;
+
+      submitBtn.disabled = false;
+      submitBtn.innerHTML = submitBtn.dataset.originalText || "Submit";
+    });
+  </script>
   </body>
 </html>

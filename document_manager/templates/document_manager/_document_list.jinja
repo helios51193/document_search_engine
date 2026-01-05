@@ -1,5 +1,5 @@
 {% if documents %}
-    <table class="table table-sm align-middle">
+    <table class="table table-responsive align-middle">
       <thead>
           <tr>
               <th class="text-center">Title</th>
@@ -30,12 +30,16 @@
               </td>
               <td class="text-center">{{ doc.created_at.strftime('%Y-%m-%d') }}</td>
               <td class="text-center">
-                <button  class="btn btn-danger btn-sm" hx-post="{{ url('document_manager:delete_document', args=[doc.id])}}"
-                hx-confirm="Are you sure you want to delete this document ?" hx-trigger="click" {% if doc.status != 'ready' %} disabled {% endif %}
-                >Delete</button>
-                <button  class="btn btn-outline-secondary btn-sm" hx-post="{{ url('document_manager:reindex_document', args=[doc.id])}}"
-                hx-confirm="Re-index document ? this will rebuild embeddings" hx-trigger="click" {% if doc.status != 'ready' %} disabled {% endif %}
-                >Re-index</button>
+                <div class="btn-group">
+                    <button  class="btn btn-danger btn-sm" hx-post="{{ url('document_manager:delete_document', args=[doc.id])}}"
+                    hx-confirm="Are you sure you want to delete this document ?" hx-trigger="click" {% if doc.status != 'ready' %} disabled {% endif %}
+                    >Delete</button>
+
+                    <button  class="btn btn-outline-secondary btn-sm" hx-post="{{ url('document_manager:reindex_document', args=[doc.id])}}"
+                    hx-confirm="Re-index document ? this will rebuild embeddings" hx-trigger="click" {% if doc.status != 'ready' %} disabled {% endif %}
+                    >Re-index</button>
+                </div>
+                
               </td>
               <td class="text-center">
                 {% if doc.last_indexed_at %}
@@ -73,3 +77,12 @@
 {% else %}
   <p class="text-muted">No documents uploaded yet.</p>
 {% endif %}
+
+<script>
+  document.body.addEventListener("document-uploaded", function () {
+    const modal = bootstrap.Modal.getInstance(
+      document.getElementById("uploadModal")
+    );
+    if (modal) modal.hide();
+  });
+</script>

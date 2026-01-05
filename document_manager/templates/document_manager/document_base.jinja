@@ -4,7 +4,67 @@
 
 {% block content %}
 {% include 'document_manager/document_navbar.jinja' %}
-<div class="container-lg mt-4">
+
+<div class="container-lg">
+
+    {# Header row #}
+    <div class="row align-items-center mb-3 mt-2">
+        <div class="col-md-8">
+            <h2 class="mb-0">Documents</h2>
+        </div>
+        <div class="col-md-4 text-md-end">
+            <button
+                class="btn btn-primary mt-2"
+                hx-get="{{ url('document_manager:document_upload_panel') }}"
+                hx-target="#upload-modal-body"
+                data-bs-toggle="modal"
+                data-bs-target="#uploadModal"
+            >
+                Upload Document
+            </button>
+        </div>
+    </div>
+    
+    {# Documents table row #}
+    <div class="row">
+        <div
+            id="doc-list-panel"
+            hx-get="{{ url('documents:document_list_panel') }}"
+            hx-trigger="load, 
+                document-uploaded from:body, 
+                document-deleted from:body, 
+                document-reindexed from:body,
+                document-indexed from:body
+                "
+            hx-target="this"
+            hx-swap="innerHTML"
+        >
+        </div>
+    </div>
+
+</div>
+{# Upload Modal #}
+<div class="modal fade" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false" id="uploadModal" tabindex="-1">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Upload Document</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+
+            <div class="modal-body" id="upload-modal-body">
+                <!-- HTMX loads upload form -->
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+{# <div class="container-lg mt-4">
     <div class="row">
         <div class="col-md-7">
             <h4>Your Documents</h4>
@@ -34,5 +94,5 @@
             </div>
         </div>
     </div>
-</div>
+</div> #}
 {% endblock %}
