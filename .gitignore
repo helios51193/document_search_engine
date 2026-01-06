@@ -11,3 +11,4 @@ creds.env
 *.sqlite3
 documents
 qdrant_storage
+_test_documents

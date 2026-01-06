@@ -163,5 +163,6 @@ OPENAI_EMBEDDING_MODEL = "text-embedding-3-small"
 OLLAMA_EMBEDDING_MODEL = "nomic-embed-text"
 EMBEDDING_PROVIDER = "openai"
 VECTOR_SIZE = 1536
+DEFAULT_SIMILARITY_THRESHOLD = 0.75
 load_dotenv()
 
