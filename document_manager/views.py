@@ -83,20 +83,23 @@ def document_search_input_panel(request):
 @login_required(login_url='/login')
 def document_search_result_panel(request):
 
-    
-    query = request.POST.get("q", "").strip()
+    query = request.GET.get("q", "").strip()
+    threshold = float(request.GET.get("threshold", 0.75))
     results = []
     if query:
         results = semantic_search(
             query=query,
             user_id=request.user.id,
             top_k=10,
+            similarity_threshold=threshold
         )
-    
     context = {
         "query":query,
-        "results":results
+        "results":results,
+        "threshold":threshold
     }
+
+    print(query)
 
     return render(request, "document_manager/_search_result_panel.jinja", context=context)
 
