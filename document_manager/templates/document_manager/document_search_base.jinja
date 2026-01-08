@@ -11,7 +11,7 @@
         <div 
             class="col-12"
             hx-get="{{ url('document_manager:document_search_input_panel')}}"
-            hx-trigger="load"
+            hx-trigger="load, document-deleted from:body"
             hx-target="this"
             hx-swap="innerHTML"
         ></div>

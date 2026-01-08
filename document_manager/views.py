@@ -3,7 +3,7 @@ from django.http import HttpResponse
 from django.shortcuts import render,redirect
 from django.contrib.auth.decorators import login_required
 
-from document_manager.utilities.search import semantic_search
+from document_manager.utilities.search import hybrid_search
 from document_manager.utilities.services import reset_document_for_reindex 
 from .tasks import process_document
 from django.shortcuts import render, get_object_or_404
@@ -87,11 +87,10 @@ def document_search_result_panel(request):
     threshold = float(request.GET.get("threshold", 0.75))
     results = []
     if query:
-        results = semantic_search(
+        results = hybrid_search(
             query=query,
             user_id=request.user.id,
-            top_k=10,
-            similarity_threshold=threshold
+            threshold=threshold
         )
     context = {
         "query":query,
