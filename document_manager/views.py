@@ -7,9 +7,10 @@ from document_manager.utilities.search import hybrid_search
 from document_manager.utilities.services import reset_document_for_reindex 
 from .tasks import process_document
 from django.shortcuts import render, get_object_or_404
-from .models import Document
+from .models import Document,SearchEvent
 from .forms import DocumentUploadForm
 from .qdrant.qdrant_client import delete_document_vectors
+from django.db.models import Count, Avg, Max
 
 @login_required(login_url='/login')
 def document_dashboard(request):
@@ -92,6 +93,15 @@ def document_search_result_panel(request):
             user_id=request.user.id,
             threshold=threshold
         )
+        top = results[0]["best_score"] if results else None
+        SearchEvent.objects.create(
+            user=request.user,
+            query=query,
+            threshold=threshold,
+            result_count=len(results),
+            top_score=top,
+        )
+
     context = {
         "query":query,
         "results":results,
@@ -183,3 +193,36 @@ def document_progress_panel(request, document_id):
         response["HX-Trigger"] = "document-indexed"
     
     return response
+
+@login_required(login_url='/login')
+def analytics_page(request):
+
+    return render(request, "document_manager/document_search_analytics_base.jinja")
+
+
+@login_required(login_url='/login')
+def analytics_summary_panel(request):
+    total = SearchEvent.objects.count()
+    unique = SearchEvent.objects.values("query").distinct().count()
+    avg = SearchEvent.objects.aggregate(avg=Avg("result_count"))["avg"] or 0
+    recent = SearchEvent.objects.order_by("-created_at").first()
+
+    return render(
+        request,
+        "document_manager/_analytics_summary_panel.jinja",
+        {
+            "total": total,
+            "unique": unique,
+            "avg_results": avg,
+            "recent": recent.query if recent else "—",
+        }
+    )
+
+@login_required
+def analytics_table_panel(request):
+    events = SearchEvent.objects.order_by("-created_at")[:50]
+    return render(
+        request,
+        "document_manager/_analytics_table_panel.jinja",
+        {"events": events}
+    )

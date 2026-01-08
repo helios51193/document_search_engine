@@ -1,0 +1,26 @@
+{% extends "document_manager/base.jinja" %}
+
+{% block content %}
+{% include 'document_manager/document_navbar.jinja' %}
+<div class="container mt-4">
+    <h3>Search Analytics</h3>
+
+    <div class="row mt-3">
+        <div
+            class="col-12"
+            hx-get="{{ url('document_manager:analytics_summary_panel') }}"
+            hx-trigger="load"
+            hx-target="this"
+        ></div>
+    </div>
+
+    <div class="row mt-4">
+        <div
+            class="col-12"
+            hx-get="{{ url('document_manager:analytics_table_panel') }}"
+            hx-trigger="load"
+            hx-target="this"
+        ></div>
+    </div>
+</div>
+{% endblock %}

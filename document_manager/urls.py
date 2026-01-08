@@ -10,10 +10,13 @@ urlpatterns = [
     path("panel/search/input", views.document_search_input_panel, name="document_search_input_panel"),
     path("panel/search/result", views.document_search_result_panel, name="document_search_result_panel"),
     path("panel/progress/<int:document_id>", views.document_progress_panel, name="document_progress_panel"),
+    path("panel/analytics/summary", views.analytics_summary_panel, name="analytics_summary_panel"),
+    path("panel/analytics/table", views.analytics_table_panel, name="analytics_table_panel"),
     
     # main pages/APIs
     path("dashboard/", views.document_dashboard, name="document_dashboard"),
     path("search/", views.document_search_page, name="document_search"),
+    path("analytics/", views.analytics_page, name="search_analytics"),
     path("detail/<int:document_id>/", views.document_detail_page, name="document_detail"),
     path("delete/<int:document_id>/", views.delete_document, name="delete_document"),
     path("reindex/<int:document_id>/", views.reindex_document, name="reindex_document"),

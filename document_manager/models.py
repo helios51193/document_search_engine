@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.db import models
 from django.contrib.auth import get_user_model
 
@@ -92,3 +93,16 @@ class SearchLog(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     num_results = models.IntegerField()
     latency_ms = models.IntegerField()
+
+
+class SearchEvent(models.Model):
+
+    user = models.ForeignKey(settings.AUTH_USER_MODEL,on_delete=models.SET_NULL, null=True, blank=True)
+    query = models.CharField(max_length=300)
+    threshold = models.FloatField(default=0.75)
+    result_count = models.IntegerField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    top_score = models.FloatField(null=True, blank=True)
+
+    def __str__(self):
+        return f"{self.query} ({self.created_at:%Y-%m-%d %H:%M})"

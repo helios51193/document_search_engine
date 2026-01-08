@@ -1,0 +1,9 @@
+<div class="card p-3 shadow-sm">
+    <h5>Overview</h5>
+    <ul class="mt-2">
+        <li>Total searches: {{ total }}</li>
+        <li>Unique queries: {{ unique }}</li>
+        <li>Avg results per search: {{ '%0.2f'|format(avg_results|float)}}</li>
+        <li>Most recent search: <b>{{ recent }}</b></li>
+    </ul>
+</div>
