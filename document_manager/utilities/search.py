@@ -2,8 +2,8 @@ from qdrant_client.http import models as rest
 from collections import defaultdict
 from document_manager.utilities.highlighting import highlight_text
 from .embeddings import get_embedding
-from document_manager.qdrant.qdrant_client import search_vectors
-from document_manager.models import Chunk
+from document_manager.qdrant.qdrant_client import get_similar_documents, search_vectors
+from document_manager.models import Chunk, Document
 
 def semantic_search(query:str, user_id:int, top_k: int = 20, max_chunks_per_doc=3, similarity_threshold=0.30):
 
@@ -104,6 +104,34 @@ def keyword_search(query: str, user_id:int):
         })
 
     return results
+
+def similar_documents(doc_id, limit=5):
+
+    doc = Document.objects.filter(id=doc_id).first()
+    if not doc.doc_vector:
+        return []
+
+    res = get_similar_documents(doc.doc_vector,limit)
+
+    related = []
+
+    for hit in res:
+        if hit.id == doc_id:
+            continue  # skip self
+
+        payload = hit.payload
+        related.append({
+            "document_id": hit.id,
+            "title": payload["title"],
+            "score": round(hit.score, 3),
+        })
+
+        if len(related) >= limit:
+            break
+
+    return related
+    
+    
 
 
 def hybrid_search(query, user_id, threshold=0.75):

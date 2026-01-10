@@ -52,6 +52,8 @@ class Document(TimeStampModel):
         help_text="Approximate token count used for embeddings",
     )
     metadata = models.JSONField(blank=True, null=True, default=dict)
+    doc_vector = models.JSONField(null=True, blank=True)
+    similar_ready = models.BooleanField(default=False)
     def __str__(self):
         return self.title
 
@@ -86,13 +88,6 @@ class Chunk(models.Model):
 
     class Meta:
         unique_together = ("document", "index")
-
-class SearchLog(models.Model):
-    user = models.ForeignKey(User, null=True, on_delete=models.SET_NULL)
-    query = models.TextField()
-    created_at = models.DateTimeField(auto_now_add=True)
-    num_results = models.IntegerField()
-    latency_ms = models.IntegerField()
 
 
 class SearchEvent(models.Model):

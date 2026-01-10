@@ -12,6 +12,7 @@ urlpatterns = [
     path("panel/progress/<int:document_id>", views.document_progress_panel, name="document_progress_panel"),
     path("panel/analytics/summary", views.analytics_summary_panel, name="analytics_summary_panel"),
     path("panel/analytics/table", views.analytics_table_panel, name="analytics_table_panel"),
+    path("panel/similar_document/<int:doc_id>", views.similar_docs_panel, name="similar_docs_panel"),
     
     # main pages/APIs
     path("dashboard/", views.document_dashboard, name="document_dashboard"),

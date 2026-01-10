@@ -6,7 +6,7 @@
     >
 
     <div class="row g-2">
-        <div class="col-md-8">
+        <div class="col-md-7">
             <input type="text" class="form-control" name="q"
                 placeholder="Search..." autocomplete="off" required>
         </div>
@@ -22,6 +22,20 @@
         <div class="col-md-1 d-grid">
             <button class="btn btn-primary" type="submit">
                 Search
+            </button>
+        </div>
+        <div class="col-md-1 d-grid">
+            <button
+                type="reset"
+                class="btn btn-outline-secondary"
+                id="clear-btn"
+                hx-get="{{ url('document_manager:document_search_result_panel') }}"
+                hx-target="#search-results-panel"
+                hx-vals='{"q": ""}'
+                hx-swap="innerHTML"
+                _="on click set #search-query.value to '' then set #threshold-select.value to '0.75'"
+            >
+            Clear
             </button>
         </div>
     </div>

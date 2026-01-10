@@ -1,0 +1,16 @@
+<div id="similar-docs">
+{% if related %}
+    <ul class="list-group list-group-flush">
+    {% for r in related %}
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+            <a href="{{ url('document_manager:document_detail', args=[r.document_id]) }}">
+                {{ r.title }}
+            </a>
+            <small class="text-muted">{{ r.score }}</small>
+        </li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p class="text-muted">No similar documents found.</p>
+{% endif %}
+</div>

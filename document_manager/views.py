@@ -3,7 +3,7 @@ from django.http import HttpResponse
 from django.shortcuts import render,redirect
 from django.contrib.auth.decorators import login_required
 
-from document_manager.utilities.search import hybrid_search
+from document_manager.utilities.search import hybrid_search, similar_documents
 from document_manager.utilities.services import reset_document_for_reindex 
 from .tasks import process_document
 from django.shortcuts import render, get_object_or_404
@@ -218,11 +218,20 @@ def analytics_summary_panel(request):
         }
     )
 
-@login_required
+@login_required(login_url='/login')
 def analytics_table_panel(request):
     events = SearchEvent.objects.order_by("-created_at")[:50]
     return render(
         request,
         "document_manager/_analytics_table_panel.jinja",
         {"events": events}
+    )
+
+@login_required(login_url='/login')
+def similar_docs_panel(request, doc_id):
+    related = similar_documents(doc_id)
+    return render(
+        request,
+        "document_manager/_document_similar_document.jinja",
+        {"related": related},
     )

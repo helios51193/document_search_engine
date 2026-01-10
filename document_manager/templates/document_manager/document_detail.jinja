@@ -32,7 +32,19 @@
 
         <hr>
 
+        <div
+            hx-get="{{ url('document_manager:similar_docs_panel', args=[document.id]) }}"
+            hx-target="#similar-docs"
+            hx-trigger="load"
+            hx-swap="outerHTML"
+        >
+        <div id="similar-docs">Loading…</div>
+
         <a href="{{ url('document_manager:document_search') }}" class="btn btn-secondary">Back to Search </a>
+    
+    </div>
+    <div class="container mt">
+        
     </div>
     
 {% endif %}
