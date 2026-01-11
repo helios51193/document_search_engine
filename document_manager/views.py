@@ -11,6 +11,8 @@ from .models import Document,SearchEvent
 from .forms import DocumentUploadForm
 from .qdrant.qdrant_client import delete_document_vectors
 from django.db.models import Count, Avg, Max
+import logging
+logger = logging.getLogger(__name__)
 
 @login_required(login_url='/login')
 def document_dashboard(request):

@@ -15,18 +15,18 @@ import os
 from dotenv import load_dotenv
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
+load_dotenv()
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/5.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-f91t#-h^k=ypzga*-wlidx6fl-)$#3wq5o0^alpf*z69(n_lnu'
+SECRET_KEY = os.getenv("DJANGO_SECRET",'django-insecure-f91t#-h^k=ypzga*-wlidx6fl-)$#3wq5o0^alpf*z69(n_lnu')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = True if os.getenv("ENVIRONMENT","local") == "local" else False
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["localhost","127.0.0.1"] + (os.getenv("ALLOWED_HOSTS").split(",") if os.getenv("ALLOWED_HOSTS") else [])
 
 
 # Application definition
@@ -153,6 +153,55 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 LOGIN_URL = '/login/'
 
+#LOGGING
+LOG_DIR = BASE_DIR / "logs"
+os.makedirs(LOG_DIR, exist_ok=True)
+
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+
+    "formatters": {
+        "verbose": {
+            "format": "[{asctime}] {levelname} {name} {message}",
+            "style": "{",
+        },
+    },
+
+    "handlers": {
+        "file": {
+            "class": "logging.FileHandler",
+            "filename": LOG_DIR / "application.log",
+            "formatter": "verbose",
+        },
+        # Optional: console
+        "console": {
+            "class": "logging.StreamHandler",
+            "formatter": "verbose",
+        },
+    },
+
+    "loggers": {
+        "django": {
+            "handlers": ["file", "console"],
+            "level": "INFO",
+        },
+        "document_manager": {  # your app
+            "handlers": ["file", "console"],
+            "level": "DEBUG",
+            "propagate": False,
+        },
+        # celery logs reuse same file
+        "celery": {
+            "handlers": ["file", "console"],
+            "level": "INFO",
+            "propagate": False,
+        },
+    },
+}
+
+
+
 #Qdrant
 QDRANT_HOST = os.getenv("QDRANT_HOST", "localhost")
 QDRANT_PORT = int(os.getenv("QDRANT_PORT", 6333))
@@ -162,15 +211,17 @@ CHUNKS_COLLECTION_NAME = "doc_chunks"
 DOCUMENT_COLLECTION_NAME = "documents"
 
 # Celery
-CELERY_BROKER_URL = "redis://localhost:6379/0"
-CELERY_RESULT_BACKEND = "redis://localhost:6379/0"
+BROKER_HOST= os.getenv("CELERY_BROKER_HOST","localhost")
+CELERY_BROKER_URL = f"redis://{BROKER_HOST}:6379/0"
+CELERY_RESULT_BACKEND = f"redis://{BROKER_HOST}:6379/0"
 
 
 # LLM
-OPENAI_EMBEDDING_MODEL = "text-embedding-3-small"
+OPENAI_EMBEDDING_MODEL = os.getenv("OPENAI_EMBEDDING_MODEL","text-embedding-3-small")
 OLLAMA_EMBEDDING_MODEL = "nomic-embed-text"
 EMBEDDING_PROVIDER = "openai"
 VECTOR_SIZE = 1536
 DEFAULT_SIMILARITY_THRESHOLD = 0.75
-load_dotenv()
+
+
 

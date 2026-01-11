@@ -13,6 +13,9 @@ from .utilities.chunking import chunk_text
 from pprint import pprint
 from .qdrant.qdrant_client  import ensure_collection, upsert_document_vector, upsert_vector
 import numpy as np
+import logging
+logger = logging.getLogger(__name__)
+
 
 
 def compute_mean_vector(embeddings):
@@ -26,6 +29,9 @@ def compute_mean_vector(embeddings):
 
 @shared_task
 def process_document(document_id):
+
+
+    logger.info(f"Chunking document {document_id}")
     doc = Document.objects.get(id=document_id)
 
     doc.status = "indexing"
@@ -82,10 +88,12 @@ def process_document(document_id):
         doc.last_indexed_at = timezone.now()
         doc.save(update_fields=["status", "progress","last_indexed_at","chunk_count","token_count"])
 
+        logger.info(f"Completed Chunking document {document_id}")
         # optional future: send event via webhook / redis pubsub
         return {"status":'ok', "timezone":timezone.now()}
     
     except Exception as e:
+        logger.error(f"Error while chunking {e}", exc_info=True)
         doc.status = "error"
         doc.metadata['error'] = str(e)
         print(f"{traceback.format_exc()}")
