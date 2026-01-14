@@ -24,6 +24,10 @@
             <button class="btn btn-primary w-100" type="submit">
                 Login
             </button>
+            <p class="mt-3 text-muted">
+                Don't have an account?
+            <a href="{{ url('auth_manager:auth_signup') }}">Sign up</a>
+</p>
 
         </form>
         {% if has_errors == True %}

@@ -1,11 +1,14 @@
 import traceback
 from django.shortcuts import render,redirect
-from .forms import LoginForm
+
+from auth_manager.utilities.authenticated_redirector import redirect_authenticated
+from .forms import LoginForm,SignupForm
 from django.contrib.auth import authenticate, login, logout
 # Create your views here.
 
+@redirect_authenticated()
 def user_login(request):
-    
+
     form = LoginForm()
     context = {
         "login_form":form,
@@ -24,7 +27,7 @@ def user_login(request):
                 if user is not None:
                     print("Authenticated")
                     login(request,user)
-                    return redirect('documents:document_dashboard')
+                    return redirect('document_manager:document_dashboard')
                 else:
                     context['has_errors'] = True
                     context['errors'] = ['Invalid email and/or password']
@@ -43,7 +46,29 @@ def user_login(request):
 
 def user_logout(request):
     logout(request)
-    redirect('auth_login')
+    return redirect('auth_manager:auth_login')
 
+@redirect_authenticated()
 def user_signup(request):
-    pass
+    
+    if request.user.is_authenticated:
+        return redirect("document_manager:document_dashboard")
+    
+    form = SignupForm()
+    context = {
+        "signup_form":form,
+        "has_errors":False,
+        "errors":[]
+    }
+
+    if request.method == "POST":
+        form = SignupForm(request.POST)
+        if form.is_valid():
+            user = form.save()
+            return redirect('auth_manager:auth_login')
+        else:
+            errors = [error for field_errors in form.errors.values() for error in field_errors]
+            context['has_errors'] = True
+            context['errors'] = errors
+        
+    return render(request, "auth_manager/signup.jinja", context=context)
