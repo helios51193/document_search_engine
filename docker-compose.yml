@@ -2,7 +2,11 @@ services:
   web:
     build: .
     container_name: dse_web
-    command: gunicorn document_search_engine.wsgi:application -b 0.0.0.0:8000
+    command: >
+      sh -c "
+        python manage.py migrate &&
+        gunicorn document_search_engine.wsgi:application --bind 0.0.0.0:8000 --workers 3
+      "
     volumes:
       - .:/app
     ports:

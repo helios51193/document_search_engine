@@ -3,7 +3,7 @@ from django.http import HttpResponse
 from django.shortcuts import render,redirect
 from django.contrib.auth.decorators import login_required
 
-from document_manager.utilities.search import hybrid_search, similar_documents
+from document_manager.utilities.search import explain_single_document, hybrid_search, similar_documents
 from document_manager.utilities.services import reset_document_for_reindex 
 from .tasks import process_document
 from django.shortcuts import render, get_object_or_404
@@ -14,7 +14,7 @@ from django.db.models import Count, Avg, Max
 import logging
 logger = logging.getLogger(__name__)
 
-@login_required(login_url='/login')
+@login_required(login_url='/admin/login')
 def document_dashboard(request):
     """
     Renders the base layout with two empty divs that HTMX will fill.
@@ -23,13 +23,13 @@ def document_dashboard(request):
 
 
 
-@login_required(login_url='/login')
+@login_required(login_url='/admin/login')
 def document_list_panel(request):
     
     documents = documents = Document.objects.filter(owner=request.user).order_by("-created_at")
     return render(request, "document_manager/_document_list.jinja", {"documents": documents})
 
-@login_required(login_url='/login')
+@login_required(login_url='/admin/login')
 def document_upload_panel(request):
 
     form = DocumentUploadForm()
@@ -75,7 +75,7 @@ def document_upload_panel(request):
         return render(request, "document_manager/_document_upload.jinja", context=context)
 
 
-@login_required(login_url='/login')
+@login_required(login_url='/admin/login')
 def document_search_input_panel(request):
 
     context = {}
@@ -83,7 +83,7 @@ def document_search_input_panel(request):
     return render(request, "document_manager/_search_input_panel.jinja", context=context)
 
 
-@login_required(login_url='/login')
+@login_required(login_url='/admin/login')
 def document_search_result_panel(request):
 
     query = request.GET.get("q", "").strip()
@@ -114,14 +114,14 @@ def document_search_result_panel(request):
 
     return render(request, "document_manager/_search_result_panel.jinja", context=context)
 
-@login_required(login_url='/login')
+@login_required(login_url='/admin/login')
 def document_search_page(request):
 
     context = {}
 
     return render(request, "document_manager/document_search_base.jinja", context=context)
 
-@login_required(login_url='/login')
+@login_required(login_url='/admin/login')
 def document_detail_page(request, document_id):
 
     context = {}
@@ -135,7 +135,7 @@ def document_detail_page(request, document_id):
 
     return render(request, "document_manager/document_detail.jinja", context=context)
 
-@login_required(login_url='/login')
+@login_required(login_url='/admin/login')
 def delete_document(request, document_id:int):
 
     if request.method != "POST":
@@ -157,7 +157,7 @@ def delete_document(request, document_id:int):
     response["HX-Trigger"] = "document-deleted"
     return response
 
-@login_required(login_url='/login')
+@login_required(login_url='/admin/login')
 def reindex_document(request, document_id):
 
     if request.method != "POST":
@@ -176,7 +176,7 @@ def reindex_document(request, document_id):
     response["HX-Trigger"] = "document-reindexed"
     return response
 
-@login_required(login_url='/login')
+@login_required(login_url='/admin/login')
 def document_progress_panel(request, document_id):
 
     document = get_object_or_404(
@@ -196,13 +196,13 @@ def document_progress_panel(request, document_id):
     
     return response
 
-@login_required(login_url='/login')
+@login_required(login_url='/admin/login')
 def analytics_page(request):
 
     return render(request, "document_manager/document_search_analytics_base.jinja")
 
 
-@login_required(login_url='/login')
+@login_required(login_url='/admin/login')
 def analytics_summary_panel(request):
     total = SearchEvent.objects.count()
     unique = SearchEvent.objects.values("query").distinct().count()
@@ -220,7 +220,7 @@ def analytics_summary_panel(request):
         }
     )
 
-@login_required(login_url='/login')
+@login_required(login_url='/admin/login')
 def analytics_table_panel(request):
     events = SearchEvent.objects.order_by("-created_at")[:50]
     return render(
@@ -229,11 +229,28 @@ def analytics_table_panel(request):
         {"events": events}
     )
 
-@login_required(login_url='/login')
+@login_required(login_url='/admin/login')
 def similar_docs_panel(request, doc_id):
     related = similar_documents(doc_id)
     return render(
         request,
         "document_manager/_document_similar_document.jinja",
         {"related": related},
+    )
+
+@login_required(login_url='/admin/login')
+def explain_result_panel(request, doc_id):
+
+    query = request.GET.get("q", "")
+    threshold = float(request.GET.get("threshold", 0.75))
+
+    result = explain_single_document(
+        document_id=doc_id,
+        query=query,
+        threshold=threshold,
+        user_id=request.user.id,
+    )
+
+    return render(request, "document_manager/_explain_result_panel.jinja",
+        {"explain": result},
     )

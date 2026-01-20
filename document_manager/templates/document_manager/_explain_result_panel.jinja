@@ -1,0 +1,39 @@
+{% if explain %}
+    <div class="card mt-2">
+        <div class="card-body small">
+
+            <h6>Why this result appeared</h6>
+
+            <ul class="mb-2">
+                <li><strong>Best similarity score:</strong> {{ explain.best_score }}</li>
+                <li><strong>Similarity threshold:</strong> {{ explain.threshold }}</li>
+                <li><strong>Embedding model:</strong> {{ explain.embedding_model }}</li>
+                <li><strong>Relevant sections:</strong> {{ explain.matched_chunks }}</li>
+            </ul>
+
+            <h6 class="mt-3">Matching chunks</h6>
+
+            <table class="table table-sm">
+                <thead>
+                    <tr>
+                        <th>Chunk</th>
+                        <th>Score</th>
+                        <th>Source</th>
+                    </tr>
+                </thead>
+                <tbody>
+                {% for c in explain.chunks %}
+                    <tr>
+                        <td>#{{ c.chunk_index }}</td>
+                        <td>{{ c.score }}</td>
+                        <td>{{ c.source }}</td>
+                    </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+
+        </div>
+    </div>
+{% else %}
+    <p class="text-muted small">No explanation available.</p>
+{% endif %}

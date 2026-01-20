@@ -18,7 +18,7 @@ from django.contrib import admin
 from django.shortcuts import redirect
 from django.urls import include, path
 def root_redirect(request):
-    return redirect('auth_login')
+    return redirect('auth_manager:auth_login')
 
 
 urlpatterns = [

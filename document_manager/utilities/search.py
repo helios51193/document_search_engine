@@ -4,6 +4,7 @@ from document_manager.utilities.highlighting import highlight_text
 from .embeddings import get_embedding
 from document_manager.qdrant.qdrant_client import get_similar_documents, search_vectors
 from document_manager.models import Chunk, Document
+from django.conf import settings
 
 def semantic_search(query:str, user_id:int, top_k: int = 20, max_chunks_per_doc=3, similarity_threshold=0.30):
 
@@ -49,6 +50,7 @@ def semantic_search(query:str, user_id:int, top_k: int = 20, max_chunks_per_doc=
             print(f"Chunk does not exist {payload}")
             continue
         grouped[payload["document_id"]].append({
+            "chunk_id":payload['chunk_id'],
             "score": hit["score"],
             "document_title": chunk.document.title,
             "text": chunk.text,
@@ -70,7 +72,8 @@ def semantic_search(query:str, user_id:int, top_k: int = 20, max_chunks_per_doc=
             "chunks": [
                 {
                     "score": round(c["score"], 3),
-                    "snippet": c['text']
+                    "snippet": c['text'],
+                    "chunk_id":c['chunk_id']
                 }
                 for c in top_chunks
             ],
@@ -101,6 +104,7 @@ def keyword_search(query: str, user_id:int):
             "document_title": chunk.document.title,
             "score": 1.0,  # full credit for keyword match
             "text": chunk.text,
+            "chunk_id":chunk.id
         })
 
     return results
@@ -155,6 +159,7 @@ def hybrid_search(query, user_id, threshold=0.75):
                 "document_title": doc["document_title"],
                 "score": c["score"],
                 "text": c["snippet"], 
+                "chunk_id":c['chunk_id']
             })
     
     # 3. Merge + dedupe by (document_id, text)
@@ -181,10 +186,13 @@ def hybrid_search(query, user_id, threshold=0.75):
             "document_id": doc_id,
             "document_title": top[0]["document_title"],
             "best_score": round(top[0]["score"], 3),
+            "embedding_model":settings.OPENAI_EMBEDDING_MODEL,
+            "threshold":threshold,
             "chunks": [
                 {
                     "score": c["score"],
                     "snippet": highlight_text(c["text"], query),
+                    "chunk_index":c['chunk_id']
                 }
                 for c in top
             ],
@@ -195,6 +203,38 @@ def hybrid_search(query, user_id, threshold=0.75):
     final.sort(key=lambda r: r["best_score"], reverse=True)
 
     return final
+
+def explain_single_document(document_id, query, threshold, user_id):
+    """
+    Returns structured explanation for why this document matched.
+    """
+    # Reuse hybrid search logic but restrict to this document
+    results = hybrid_search(
+        query=query,
+        user_id=user_id,
+        threshold=threshold,
+    )
+
+    for r in results:
+        if r["document_id"] == document_id:
+            print(r['chunks'])
+            return {
+                "document_title": r["document_title"],
+                "best_score": r["best_score"],
+                "matched_chunks": r["matched_chunks"],
+                "embedding_model": r.get("embedding_model"),
+                "threshold": threshold,
+                "chunks": [
+                    {
+                        "score": c["score"],
+                        "source": c.get("source", "semantic"),
+                        "chunk_index": c.get("chunk_index"),
+                    }
+                    for c in r["chunks"]
+                ],
+            }
+
+    return None
 
 
 
