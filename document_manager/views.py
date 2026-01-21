@@ -1,10 +1,12 @@
 import traceback
+from django.conf import settings
 from django.http import HttpResponse
 from django.shortcuts import render,redirect
 from django.contrib.auth.decorators import login_required
 
 from document_manager.utilities.search import explain_single_document, hybrid_search, similar_documents
-from document_manager.utilities.services import reset_document_for_reindex 
+from document_manager.utilities.services import reset_document_for_reindex
+from document_manager.utilities.vector_utils import cosine_similarity 
 from .tasks import process_document
 from django.shortcuts import render, get_object_or_404
 from .models import Document,SearchEvent
@@ -235,7 +237,7 @@ def similar_docs_panel(request, doc_id):
     return render(
         request,
         "document_manager/_document_similar_document.jinja",
-        {"related": related},
+        {"related": related, "document_id":doc_id},
     )
 
 @login_required(login_url='/admin/login')
@@ -253,4 +255,34 @@ def explain_result_panel(request, doc_id):
 
     return render(request, "document_manager/_explain_result_panel.jinja",
         {"explain": result},
+    )
+
+@login_required(login_url='/admin/login')
+def explain_doc_similarity(request, doc_a_id, doc_b_id):
+
+    doc_a = Document.objects.get(id=doc_a_id, owner=request.user)
+    doc_b = Document.objects.get(id=doc_b_id, owner=request.user)
+
+    if not doc_a.doc_vector or not doc_b.doc_vector:
+        return render(
+            request,
+            "document_manager/_explain_doc_similarity.jinja",
+            {"error": "Similarity data not available."},
+        )
+
+    score = cosine_similarity(doc_a.doc_vector, doc_b.doc_vector)
+
+    context = {
+        "doc_a": doc_a,
+        "doc_b": doc_b,
+        "score": round(score, 3),
+        "embedding_model": settings.OPENAI_EMBEDDING_MODEL,
+        "vector_dim": len(doc_a.doc_vector),
+        "method": "Cosine similarity of document centroids",
+    }
+
+    return render(
+        request,
+        "document_manager/_explain_doc_similarity.jinja",
+        context,
     )

@@ -14,6 +14,7 @@ urlpatterns = [
     path("panel/analytics/table", views.analytics_table_panel, name="analytics_table_panel"),
     path("panel/similar_document/<int:doc_id>", views.similar_docs_panel, name="similar_docs_panel"),
     path("panel/explain_document/<int:doc_id>", views.explain_result_panel, name="explain_result_panel"),
+    path("panel/document_similarity_explain/<int:doc_a_id>/<int:doc_b_id>/", views.explain_doc_similarity, name="explain_doc_similarity"),
     
     # main pages/APIs
     path("dashboard/", views.document_dashboard, name="document_dashboard"),

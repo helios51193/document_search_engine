@@ -48,13 +48,13 @@
                     {% endfor %}
                 </ul>
                 <div class="row">
-                    <div class="col-md-3">
+                    <div class="col-md-2">
                         <a href="{{ url('document_manager:document_detail', args=[r.document_id]) }}" class="small">
                         View document
                         </a>
                     </div>
-                    <div class="col-md-6"></div>
-                    <div class="col-md-3">
+                    <div class="col-md-8"></div>
+                    <div class="col-md-2">
                         <a href="#" class="small text-muted" hx-get="{{ url('document_manager:explain_result_panel', args=[r.document_id]) }}"
                             hx-target="#explain-{{ r.document_id }}"
                             hx-include="#search-form"

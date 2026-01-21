@@ -33,12 +33,12 @@ def upsert_document_vector(doc_id:int,doc_title:str, mean_vec:np.ndarray):
         client = qdrant_client()
         # id can be chunk_id or str(document_id) + ":" + str(chunk_id)
         client.upsert(
-            collection_name="documents",
+            collection_name=settings.DOCUMENT_COLLECTION_NAME,
             points=[
                 rest.PointStruct(
                     id=doc_id,  # reuse doc PK for stable mapping
                     vector=mean_vec,
-                    payload={"title": doc_title},
+                    payload={"title": doc_title, "document_id":doc_id },
                 )
             ]
         )
@@ -117,13 +117,17 @@ def delete_document_vectors(document_id:int):
         collection_name=settings.CHUNKS_COLLECTION_NAME,
         points_selector=selector,
     )
+    client.delete(
+        collection_name=settings.DOCUMENT_COLLECTION_NAME,
+        points_selector=selector,
+    )
 
 def get_similar_documents(doc_vector:any, limit:int=5):
 
     client = qdrant_client()
 
     results = client.search(
-        collection_name="documents",
+        collection_name=settings.DOCUMENT_COLLECTION_NAME,
         query_vector=doc_vector,
         limit=limit + 1,  # include itself
     )

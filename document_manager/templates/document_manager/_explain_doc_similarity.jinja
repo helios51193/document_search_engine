@@ -1,0 +1,35 @@
+{% if error %}
+<p class="text-danger small">{{ error }}</p>
+{% else %}
+<div class="card mt-2">
+    <div class="card-body small">
+
+        <h6>Why these documents are similar</h6>
+
+        <ul class="mb-2">
+            <li>
+                <strong>Similarity score:</strong>
+                {{ score }}
+            </li>
+            <li>
+                <strong>Embedding model:</strong>
+                {{ embedding_model }}
+            </li>
+            <li>
+                <strong>Vector dimension:</strong>
+                {{ vector_dim }}
+            </li>
+            <li>
+                <strong>Method:</strong>
+                {{ method }}
+            </li>
+        </ul>
+
+        <p class="text-muted mb-0">
+            This score represents the cosine similarity between the
+            average embedding of <strong>{{ doc_a.title }}</strong>
+            and <strong>{{ doc_b.title }}</strong>.
+        </p>
+    </div>
+</div>
+{% endif %}

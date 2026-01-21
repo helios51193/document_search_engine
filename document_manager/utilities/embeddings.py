@@ -3,6 +3,7 @@ import logging
 from typing import List
 from document_manager.models import SiteSetting
 from django.conf import settings
+from openai import OpenAI
 
 logger = logging.getLogger(__name__)
 
@@ -43,7 +44,7 @@ def get_openai_embedding(text: str) -> List[float]:
     """
     Returns a single embedding vector for text using OpenAI.
     """
-    from openai import OpenAI
+    
     client = OpenAI(api_key=os.getenv("OPENAI_KEY"))
 
     input = _normalize_text_input(text)

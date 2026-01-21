@@ -84,9 +84,11 @@ def process_document(document_id):
         doc.status = "ready"
         doc.chunk_count = len(chunk_objs)
         doc.token_count = total_tokens
+        doc.doc_vector = mean_vec
+        doc.similar_ready = True
         doc.progress = 100
         doc.last_indexed_at = timezone.now()
-        doc.save(update_fields=["status", "progress","last_indexed_at","chunk_count","token_count"])
+        doc.save(update_fields=["status", "progress","last_indexed_at","chunk_count","token_count","doc_vector","similar_ready"])
 
         logger.info(f"Completed Chunking document {document_id}")
         # optional future: send event via webhook / redis pubsub

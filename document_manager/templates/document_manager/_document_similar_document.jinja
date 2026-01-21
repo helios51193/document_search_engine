@@ -1,12 +1,27 @@
 <div id="similar-docs">
 {% if related %}
+    <h4>Similar Documents</h4>
+
     <ul class="list-group list-group-flush">
     {% for r in related %}
-        <li class="list-group-item d-flex justify-content-between align-items-center">
-            <a href="{{ url('document_manager:document_detail', args=[r.document_id]) }}">
-                {{ r.title }}
+        <li class="list-group-item">
+
+            <div class="d-flex justify-content-between align-items-center">
+                <a href="{{ url('document_manager:document_detail', args=[r.document_id]) }}">
+                    {{ r.title }}
+                </a>
+                <small class="text-muted">{{ r.score }}</small>
+            </div>
+
+            <a href="#" class="small text-muted" hx-get="{{ url('document_manager:explain_doc_similarity', args=[document_id, r.document_id]) }}"
+                hx-target="#doc-similarity-explain-{{ r.document_id }}"
+                hx-swap="innerHTML"
+            >
+                Why similar?
             </a>
-            <small class="text-muted">{{ r.score }}</small>
+
+            <div id="doc-similarity-explain-{{ r.document_id }}"></div>
+
         </li>
     {% endfor %}
     </ul>
