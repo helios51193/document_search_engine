@@ -127,6 +127,18 @@ Visit `http://localhost:8000` to access the application.
 - Monitor popular searches
 - Track user engagement patterns
 
+### Explainability & Transparency
+
+Every semantic result in the system is fully explainable:
+
+- See **why a document matched** a query
+- Inspect **which chunks contributed**
+- View similarity scores and thresholds
+- Identify whether a match came from keyword or semantic retrieval
+- Understand **why two documents are considered similar**
+
+This makes the system suitable for enterprise use cases where auditability and trust in AI systems are required.
+
 ## 🏗️ Architecture
 ```
 ┌─────────────┐      ┌─────────────┐      ┌─────────────┐
@@ -156,6 +168,20 @@ Configure task queues and workers in `celery.py`:
 - Adjust concurrency for your hardware
 - Set up periodic tasks for maintenance
 - Configure result backends
+
+## 📸 Screenshots
+
+### Document Library & Upload
+![Document List](screenshots/Screenshot_1.png)
+
+### Hybrid Semantic Search and Explainability Panel
+![Search Results](screenshots/Screenshot_3.png)
+
+### Search Analytics Dashboard
+![Analytics](screenshots/Screenshot_4.png)
+
+### Related Documents & Similarity Explanation
+![Related Documents](screenshots/Screenshot_2.png)
 
 ## 🤝 Contributing
 
